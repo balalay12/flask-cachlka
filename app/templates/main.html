@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html ng-app="app">
+	<head lang="ru">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Главная</title>
+
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/bootstrap/dist/css/bootstrap.min.css') }}" />
+
+		<script type="text/javascript">
+			var template_dirs = "{{ url_for('static', filename='app') }}";
+		</script>
+	</head>
+	<body>
+
+		<ui-view></ui-view>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/angular/angular.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/angular-ui-router/release/angular-ui-router.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/angular-resource/angular-resource.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/angular-cookies/angular-cookies.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/chart.js/Chart.js') }}"></script>
+		<script src="{{ url_for('static', filename='node_modules/angular-chart.js/angular-chart.js') }}"></script>
+		<script src="{{ url_for('static', filename='app/app.js') }}"></script>
+		<script src="{{ url_for('static', filename='app/main/main.ctrl.js') }}"></script>
+		<script src="{{ url_for('static', filename='app/main/main.fac.js') }}"></script>
+		<script src="{{ url_for('static', filename='app/registration/reg.ctrl.js') }}"></script>
+		<script src="{{ url_for('static', filename='app/registration/reg.fac.js') }}"></script>
+		<script src="{{ url_for('static', filename='app/registration/reg.dir.js') }}"></script>
+	</body>
+</html>
