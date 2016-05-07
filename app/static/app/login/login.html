@@ -1,0 +1,36 @@
+<div class="col-md-6 col-md-offset-3">
+	<form class="form-horizontal well" name="log_form" novalidate>
+		<fieldset>
+			<legend>ВХОД</legend>
+			<div class="form-group" ng-class="{ 'has-error' : log_form.inputLogin.$dirty && log_form.inputLogin.$invalid }">
+				<label class="control-label col-lg-4" for="inputLogin">Введите логин</label>
+				<div class="col-lg-8">
+					<input class="form-control input-sm" type="text" ng-model="vm.user.name" id="inputLogin" name="inputLogin" placeholder="Логин" ng-minlength=3 ng-maxlength=20 required  />
+					<div ng-show="log_form.inputLogin.$dirty && log_form.inputLogin.$invalid">
+						<p class="help-block" ng-show="log_form.inputLogin.$error.required">required</p>
+						<p class="help-block" ng-show="log_form.inputLogin.$error.minlength">min 3</p>
+						<p class="help-block" ng-show="log_form.inputLogin.$error.maxlength">max 20</p>
+					</div>
+				</div>
+			</div>
+			<div class="form-group" ng-class="{ 'has-error' : log_form.inputPass.$invalid && log_form.inputPass.$touched }">
+				<label class="col-lg-4 control-label" for="inputPass">Введите пароль</label>
+				<div class="col-lg-8">
+					<input class="form-control input-sm" type="password" ng-model="vm.user.password" id="inputPass" name="inputPass" placeholder="Пароль" required />
+					<p ng-show="log_form.inputPass.$invalid && log_form.inputPass.$touched" class="help-block">Введите пароль</p>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-12">
+					<input type="button" class="btn btn-success pull-right" ng-click="vm.submit()" value="Отправить" ng-disabled="log_form.$invalid"/>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+	<div ng-show="error">
+		<div class="alert alert-dismissible alert-danger">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>{$ error $}</strong>
+		</div>
+	</div>
+</div>

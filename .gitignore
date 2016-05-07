@@ -71,5 +71,5 @@ target/
 pyvenv.cfg
 pip-selfcheck.json
 
-### js
-node_templates/
+app.db
+app/static/node_modules

@@ -1,0 +1,29 @@
+	<div class="page-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-9">	
+					<h1>
+						KACHALKA
+					</h1>
+					<p>ОНЛАЙН ДНЕВНИК  ДЛЯ ТРЕНИРОВОК</p>
+				</div>
+				<div class="col-md-3 text-center" ng-show="!vm.auth">
+					<a class="btn btn-info btn-lg" ui-sref="main.login">ВОЙТИ</a>
+					<p><small>или</small></p>
+					<a ui-sref="registration">Зарегестрироваться</a>
+				</div>
+				<div class="col-md-3 text-center" ng-show="vm.auth">
+					<p>
+						<a class="btn btn-primary btn-lg btn-block" ui-sref="main.diary">ДНЕВНИК</a>
+						<a class="btn btn-primary btn-lg btn-block" ui-sref="main.profile">ПРОФИЛЬ</a>
+					</p>
+					<a ui-sref="main.logout"><small>ВЫХОД</small></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<ui-view></ui-view>
+		</div>
+	</div>
