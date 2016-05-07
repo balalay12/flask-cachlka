@@ -9,6 +9,7 @@
 
 		<script type="text/javascript">
 			var template_dirs = "{{ url_for('static', filename='app') }}";
+			var csrftoken = "{{ csrf_token() }}"
 		</script>
 	</head>
 	<body>

@@ -7,7 +7,7 @@
 		.factory("registrationFactory", function($http) {
 
 			function registration(data) {
-				return $http.post("/reg/", angular.toJson(data))
+				return $http.post("/api/reg", angular.toJson(data))
 			}
 
 			function check(data) {

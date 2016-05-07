@@ -1,5 +1,9 @@
 angular
 	.module('app', ['ui.router', 'ngResource', 'ngCookies', 'ui.bootstrap', 'chart.js'])
+	.run(function($http, $cookies) {
+		$http.defaults.headers.common['X-CSRFToken'] = csrftoken;
+		$http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+	})
 	.config(function($interpolateProvider, $resourceProvider, $stateProvider, $urlRouterProvider) {
 		
 		$interpolateProvider.startSymbol('{$');
