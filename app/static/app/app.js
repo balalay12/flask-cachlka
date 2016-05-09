@@ -27,12 +27,12 @@ angular
 				url: '/registration',
 				templateUrl: template_dirs + '/registration/reg.html',
 				controller: 'registrationCtrl as vm'
+			})
+			.state('login', {
+				url: '/login',
+				templateUrl: template_dirs + '/login/login.html',
+				controller: 'loginCtrl as vm'
 			});
-//			.state('main.login', {
-//				url: '/login',
-//				templateUrl: template_dirs + '/login/login.html',
-//				controller: 'loginCtrl as vm'
-//			})
 //			.state('main.logout', {
 //				url: '/logout',
 //				template: '<ui-view/>',

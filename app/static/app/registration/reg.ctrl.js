@@ -12,11 +12,9 @@
 
 			function submit() {
 
-				var data = {reg: vm.new_user};
-
-				registrationFactory.registration(data)
+				registrationFactory.registration(vm.new_user)
 					.success(function() {
-						$state.go("main.login");
+						$state.go("login");
 					})
 					.error(function() {
 						if (status == '404') { $log.error(data); }
