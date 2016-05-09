@@ -12,12 +12,10 @@
 
 			function submit() {
 				
-				var data = {login: vm.user};
-				
-				loginFactory.login(data)
+				loginFactory.login(vm.user)
 					.success(function() {
 						$scope.$emit("userIn");
-						$state.go("main");
+						$state.go("home.news");
 					})
 					.error(function(data, status) {
 						if (status == '404') { $scope.error = data['error']; }

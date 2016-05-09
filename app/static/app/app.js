@@ -32,12 +32,12 @@ angular
 				url: '/login',
 				templateUrl: template_dirs + '/login/login.html',
 				controller: 'loginCtrl as vm'
+			})
+			.state('logout', {
+				url: '/logout',
+				template: '<ui-view/>',
+				controller: 'logoutCtrl'
 			});
-//			.state('main.logout', {
-//				url: '/logout',
-//				template: '<ui-view/>',
-//				controller: 'logoutCtrl'
-//			})
 //			.state('main.diary', {
 //				url: '/diary',
 //				templateUrl: template_dirs + '/diary/diary.html',

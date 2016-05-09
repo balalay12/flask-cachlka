@@ -17,3 +17,7 @@ from app import views, models
 
 
 api.add_resource(views.Registration, '/api/reg')
+api.add_resource(views.Login, '/api/login')
+api.add_resource(views.Logout, '/api/logout')
+api.add_resource(views.CheckAuth, '/api/check_auth')
+api.add_resource(views.CheckUnique, '/api/check_unique')

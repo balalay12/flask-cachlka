@@ -5,7 +5,7 @@
 			<div class="form-group" ng-class="{ 'has-error' : log_form.inputLogin.$dirty && log_form.inputLogin.$invalid }">
 				<label class="control-label col-lg-4" for="inputLogin">Введите логин</label>
 				<div class="col-lg-8">
-					<input class="form-control input-sm" type="text" ng-model="vm.user.name" id="inputLogin" name="inputLogin" placeholder="Логин" ng-minlength=3 ng-maxlength=20 required  />
+					<input class="form-control input-sm" type="text" ng-model="vm.user.username" id="inputLogin" name="inputLogin" placeholder="Логин" ng-minlength=3 ng-maxlength=20 required  />
 					<div ng-show="log_form.inputLogin.$dirty && log_form.inputLogin.$invalid">
 						<p class="help-block" ng-show="log_form.inputLogin.$error.required">required</p>
 						<p class="help-block" ng-show="log_form.inputLogin.$error.minlength">min 3</p>

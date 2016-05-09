@@ -5,9 +5,9 @@
 			<div class="form-group" ng-class="{ 'has-error' : reg_form.inputLogin.$dirty && reg_form.inputLogin.$invalid }">
 				<label class="control-label col-lg-4" for="inputLogin">Введите логин</label>
 				<div class="col-lg-8"> 
-					<input class="form-control input-sm" type="text" ng-model="vm.new_user.username" id="inputLogin" name="inputLogin" placeholder="Логин" required="" ng-minlength=3 ng-maxlength=20 />
-					<div ng-show="reg_form.inputLogin.$dirty && reg_form.inputLogin.$invalid">
-						<p class="help-block" ng-show="reg_form.inputLogin.$error.required">required</p>
+					<input class="form-control input-sm" type="text" ng-model="vm.new_user.username" id="inputLogin" name="inputLogin" placeholder="Логин" required="" ng-minlength=3 ng-maxlength=20 username-unique />
+					<div ng-show="reg_form.inputLogin.$dirty && reg_form.inputLogin.$invalid && reg_form.inputPass.$touched">
+						<p class="help-block" ng-show="reg_form.inputLogin.$error.required">Введите логин</p>
 						<p class="help-block" ng-show="reg_form.inputLogin.$error.minlength">min 3</p>
 						<p class="help-block" ng-show="reg_form.inputLogin.$error.maxlength">max 20</p>
 						<p class="help-block" ng-show="reg_form.inputLogin.$error.unique-name">Пользователь с таким именем существует</p>
@@ -17,9 +17,9 @@
 			<div class="form-group" ng-class="{ 'has-error' : reg_form.inputEmail.$dirty && reg_form.inputEmail.$invalid }">
 				<label class="col-lg-4 control-label" for="inputEmail">Введите адресс эл. почты</label>
 				<div class="col-lg-8">
-					<input class="form-control input-sm" type="email" ng-model="vm.new_user.email" id="inputEmail" name="inputEmail" placeholder="Адрес эл. почты" required="" />
+					<input class="form-control input-sm" type="email" ng-model="vm.new_user.email" id="inputEmail" name="inputEmail" placeholder="Адрес эл. почты" required="" email-unique />
 					<div ng-show="reg_form.inputEmail.$dirty && reg_form.inputEmail.$invalid">
-						<p class="help-block" ng-show="reg_form.inputEmail.$error.required">required</p>
+						<p class="help-block" ng-show="reg_form.inputEmail.$error.required">Введите адрес эл. почты</p>
 						<p class="help-block" ng-show="reg_form.inputEmail.$error.unique-email">Пользователь с таким именем существует</p>
 					</div>
 					<!-- <p ng-show="reg_form.inputEmail.$invalid && reg_form.inputEmail.$touched" class="help-block">Вы ввели не верный адрес эл. почты!</p> -->

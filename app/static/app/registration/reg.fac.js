@@ -11,7 +11,7 @@
 			}
 
 			function check(data) {
-				return $http.post("/api/check/", angular.toJson(data));
+				return $http.post("/api/check_unique", angular.toJson(data));
 			}
 
 			return {
