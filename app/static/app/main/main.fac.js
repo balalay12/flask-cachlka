@@ -8,7 +8,7 @@
 
 			function checkAuth() {
 
-				return $http.post('api/check_auth');
+				return $http.get('/account/check_auth/');
 			}
 
 			return {

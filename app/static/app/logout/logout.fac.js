@@ -8,7 +8,7 @@
 
 			function logout() {
 
-				return $http.post("/api/logout");
+				return $http.get("/account/logout/");
 			}
 
 			return {

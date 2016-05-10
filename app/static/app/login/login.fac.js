@@ -8,7 +8,7 @@
 
 			function login(data) {
 
-				return $http.post("/api/login", angular.toJson(data));
+				return $http.post("/account/login/", angular.toJson(data));
 			}
 
 			return {
