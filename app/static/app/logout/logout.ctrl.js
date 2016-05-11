@@ -11,8 +11,8 @@
 					$scope.$emit("userOut");
 					$state.go("home.news");
 				})
-				.error(function() {
-					console.log("что-то пошло не так")
+				.error(function(status) {
+					$state.go('login');
 				});
 		});
 })();

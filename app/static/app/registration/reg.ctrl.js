@@ -16,9 +16,9 @@
 					.success(function() {
 						$state.go("login");
 					})
-					.error(function() {
-						if (status == '404') { $log.error(data); }
-						if (status == '403') { vm.error = data['auth']; }
+					.error(function(data, status) {
+						if (status == '404') { vm.error = data['error']; }
+						if (status == '409') { vm.error = data['auth']; }
 					});
 			}
 		});

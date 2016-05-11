@@ -18,8 +18,8 @@
 						$state.go("home.news");
 					})
 					.error(function(data, status) {
-						if (status == '404') { $scope.error = data['error']; }
-						if (status == '403') { $scope.error = data['auth']; }
+						if (status == '404') { vm.error = data['error']; }
+						if (status == '409') { vm.error = data['auth']; }
 					});
 			}
 		});

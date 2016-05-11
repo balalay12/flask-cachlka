@@ -4,6 +4,18 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm
 from app.models import User
+from functools import wraps
+
+
+def check_login(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if current_user.is_authenticated:
+            response = jsonify(auth='Вы уже авторизованы')
+            response.status_code = 409
+            return response
+        return func(*args, **kwargs)
+    return decorated_view
 
 
 @app.route('/')
@@ -13,8 +25,8 @@ def index():
 
 class AccountView(FlaskView):
     @route('/registration/', methods=['POST'])
+    @check_login
     def registration(self):
-        # TODO: user auth check
         form = RegistrationForm(data=request.get_json())
         if form.validate():
             user = User(
@@ -24,13 +36,15 @@ class AccountView(FlaskView):
             )
             db.session.add(user)
             db.session.commit()
-            return jsonify(ok='ok')
+            return '', 201
         else:
-            return jsonify(not_ok='form not valid')
+            response = jsonify(error='Что-то пошло не так. Попробуйте позже.')
+            response.status_code = 404
+            return response
 
     @route('/login/', methods=['POST'])
+    @check_login
     def login(self):
-        # TODO: check auth user
         form = LoginForm(data=request.get_json())
         if form.validate():
             user = User.query.filter_by(username=form.username.data).first()
@@ -51,11 +65,9 @@ class AccountView(FlaskView):
         logout_user()
         return '', 200
 
+    @login_required
     def check_auth(self):
-        if current_user.is_authenticated:
-            return '', 200
-        else:
-            return '', 401
+        return '', 200
 
     @route('/check_unique/', methods=['POST'])
     def check_unique(self):
