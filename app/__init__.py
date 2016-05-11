@@ -24,6 +24,7 @@ from app import views, models
 
 
 views.AccountView.register(app)
+views.ProfileView.register(app)
 # api.add_resource(views.Registration, '/api/reg')
 # api.add_resource(views.Login, '/api/login')
 # api.add_resource(views.Logout, '/api/logout')

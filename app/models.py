@@ -18,3 +18,16 @@ class User(db.Model):
 
     def get_id(self):
         return str(self.id)
+
+
+class BodySize(db.Model):
+    __tablename__ = 'bodysizes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    chest = db.Column(db.Float)
+    waist = db.Column(db.Float)
+    hip = db.Column(db.Float)
+    arm = db.Column(db.Float)
+    weight = db.Column(db.Float)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

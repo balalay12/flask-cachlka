@@ -81,3 +81,16 @@ class AccountView(FlaskView):
             return '', 200
         else:
             return '', 404
+
+
+class ProfileView(FlaskView):
+    @login_required
+    def index(self):
+        user = dict()
+        user['username'] = current_user.username
+        user['email'] = current_user.email
+        return jsonify(user)
+
+    @login_required
+    def change_password(self):
+        pass

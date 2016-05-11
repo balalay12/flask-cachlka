@@ -37,7 +37,7 @@ angular
 				url: '/logout',
 				template: '<ui-view/>',
 				controller: 'logoutCtrl'
-			});
+			})
 //			.state('main.diary', {
 //				url: '/diary',
 //				templateUrl: template_dirs + '/diary/diary.html',
@@ -48,9 +48,9 @@ angular
 //				templateUrl: template_dirs + '/view_day/view_day.html',
 //				controller: 'viewDayCtrl as vm'
 //			})
-//			.state('main.profile', {
-//				url: '/profile',
-//				templateUrl: template_dirs + '/profile/profile.html',
-//				controller: 'profileCtrl as vm'
-//			});
+			.state('home.profile', {
+				url: '/profile',
+				templateUrl: template_dirs + '/profile/profile.html',
+				controller: 'profileCtrl as vm'
+			});
 	});
