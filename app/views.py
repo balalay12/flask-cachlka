@@ -2,8 +2,8 @@ from flask import render_template, jsonify
 from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm
-from app.models import User
+from app.forms import RegistrationForm, LoginForm, BodySizeForm
+from app.models import User, BodySize
 from functools import wraps
 
 
@@ -94,3 +94,30 @@ class ProfileView(FlaskView):
     @login_required
     def change_password(self):
         pass
+
+
+class BodysizeView(FlaskView):
+    @login_required
+    def index(self):
+        return jsonify(body_size=[bs.serialize for bs in BodySize.query.all()])
+
+    @login_required
+    def post(self):
+        form = BodySizeForm(data=request.get_json())
+        if form.validate():
+            body_ize = BodySize(
+                date=form.date.data,
+                chest=form.chest.data,
+                waist=form.waist.data,
+                hip=form.hip.data,
+                arm=form.arm.data,
+                weight=form.weight.data,
+                user_id=current_user.id
+            )
+            db.session.add(body_ize)
+            db.session.commit()
+            return '', 201
+        else:
+            print('form not valid')
+            # TODO: return errors
+            return '', 200

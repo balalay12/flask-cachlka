@@ -31,3 +31,15 @@ class BodySize(db.Model):
     arm = db.Column(db.Float)
     weight = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date.strftime("%Y-%m-%d"),
+            'chest': self.chest,
+            'waist': self.waist,
+            'hip': self.hip,
+            'arm': self.arm,
+            'weight': self.weight
+        }
