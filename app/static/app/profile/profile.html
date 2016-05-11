@@ -1,0 +1,65 @@
+<div class="col-md-12">
+    <h3>Профиль пользователя</h3>
+    Ник: {$ vm.user.username $} <br/>
+    Эл. почта: {$ vm.user.email $} <br/>
+    <!--<hr>-->
+    <!--<h3>Замеры тела</h3>-->
+    <!--<button class="btn btn-primary" ng-click="vm.addBodySize()">Добавить замеры</button>-->
+    <!--<table class="table table-striped table-bordered table-condensed table-responsive hidden-xs">-->
+        <!--<tbody>-->
+            <!--<tr>-->
+                <!--<th class="text-center">Дата</th>-->
+                <!--<th class="text-center">Вес</th>-->
+                <!--<th class="text-center">Грудь</th>-->
+                <!--<th class="text-center">Талия</th>-->
+                <!--<th class="text-center">Бедра</th>-->
+                <!--<th class="text-center">Руки</th>-->
+            <!--</tr>-->
+            <!--<tr class="text-center" ng-repeat="size in vm.bodySize">-->
+                <!--<th class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.date | date: 'dd.MM.yyyy' $}</a></th>-->
+                <!--<th class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.weight $}</a></th>-->
+                <!--<th class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.chest $}</a></th>-->
+                <!--<th class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.waist $}</a></th>-->
+                <!--<th class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.hip $}</a></th>-->
+                <!--<th class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.arm $}</a></th>-->
+            <!--</tr>-->
+        <!--</tbody>-->
+    <!--</table>-->
+    <!--<div class="visible-xs-block" ng-repeat="size in vm.bodySize">-->
+        <!--<table class="table table-striped table-bordered table-condensed table-responsive">-->
+            <!--<tr>-->
+                <!--<td class="text-center">Дата</td>-->
+                <!--<td class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.date | date: 'dd.MM.yyyy' $}</a></td>-->
+            <!--</tr>-->
+            <!--<tr ng-if="size.weight">-->
+                <!--<td class="text-center">Вес</td>-->
+                <!--<td class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.weight $}</a></td>-->
+            <!--</tr>-->
+            <!--<tr ng-if="size.chest">-->
+                <!--<td class="text-center">Грудь</td>-->
+                <!--<td class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.chest $}</a></td>-->
+            <!--</tr>-->
+            <!--<tr ng-if="size.waist">-->
+                <!--<td class="text-center">Талия</td>-->
+                <!--<td class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.waist $}</a></td>-->
+            <!--</tr>-->
+            <!--<tr ng-if="size.hip">-->
+                <!--<td class="text-center">Бедра</td>-->
+                <!--<td class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.hip $}</a></td>-->
+            <!--</tr>-->
+            <!--<tr ng-if="size.arm">-->
+                <!--<td class="text-center">Руки</td>-->
+                <!--<td class="text-center"><a ng-click="vm.editBodySize(size.id)">{$ size.arm $}</a></td>-->
+            <!--</tr>-->
+        <!--</table>-->
+    <!--</table>-->
+<!--<div ng-if="data.length > 0">
+    <hr>
+    <h3>Статистика</h3>
+    
+    <canvas id="line" class="chart chart-line" chart-data="data"
+      chart-labels="labels" chart-legend="true" chart-series="series"
+      chart-click="onClick" >
+    </canvas>
+</div>-->
+</div>
