@@ -7,7 +7,9 @@
 		.factory("bodySizeFactory", function($resource) {
 
 			function bodySize() {
-				return $resource("/bodysize/");
+				return $resource("/bodysize/:id", null, {
+				    'update': {method: 'PATCH'}
+				});
 			}
 
 			return {

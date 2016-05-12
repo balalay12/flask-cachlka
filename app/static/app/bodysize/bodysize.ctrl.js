@@ -16,8 +16,8 @@
         $scope.adding = false;
 
         bodySizeFactory.bodySize()
-          .query({id: $rootScope.bodySizeId}, function(data) {
-            $scope.bodySize = data[0];
+          .get({id: $rootScope.bodySizeId}, function(data) {
+            $scope.bodySize = data.body_size;
             $scope.bodySize.date = new Date($scope.bodySize.date);
           });
       }
@@ -39,7 +39,7 @@
       $scope.update = function() {
         $scope.bodySize.date = $filter("date")($scope.bodySize.date, "yyyy-MM-dd");
         bodySizeFactory.bodySize()
-          .save({update:$scope.bodySize, id:$scope.bodySize.id}, function() {
+          .update({id:$scope.bodySize.id}, $scope.bodySize, function() {
             $rootScope.$broadcast("bodySizeEdited");
             $scope.cancel();
           })

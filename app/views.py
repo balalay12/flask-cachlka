@@ -1,10 +1,12 @@
 from flask import render_template, jsonify
 from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
+from sqlalchemy import desc
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, BodySizeForm
 from app.models import User, BodySize
 from functools import wraps
+from datetime import date
 
 
 def check_login(func):
@@ -86,10 +88,7 @@ class AccountView(FlaskView):
 class ProfileView(FlaskView):
     @login_required
     def index(self):
-        user = dict()
-        user['username'] = current_user.username
-        user['email'] = current_user.email
-        return jsonify(user)
+        return jsonify(current_user.serialize)
 
     @login_required
     def change_password(self):
@@ -99,7 +98,31 @@ class ProfileView(FlaskView):
 class BodysizeView(FlaskView):
     @login_required
     def index(self):
-        return jsonify(body_size=[bs.serialize for bs in BodySize.query.all()])
+        return jsonify(body_size=[bs.serialize for bs in BodySize.query.order_by(desc(BodySize.date)).limit(10).all()])
+
+    @login_required
+    def get(self, id):
+        body_size = BodySize.query.get(int(id))
+        return jsonify(body_size=body_size.serialize)
+
+    @login_required
+    def patch(self, id):
+        form = BodySizeForm(data=request.get_json())
+        if form.validate():
+            year, month, day = form.date.data.split('-')
+            BodySize.query.filter_by(id=int(id)).update({
+                'date': date(int(year), int(month), int(day)),
+                'hip': form.hip.data,
+                'waist': form.waist.data,
+                'chest': form.chest.data,
+                'arm': form.arm.data,
+                'weight': form.weight.data
+            })
+            db.session.commit()
+            return '', 200
+        else:
+            # TODO: return error
+            return '', 200
 
     @login_required
     def post(self):
@@ -121,3 +144,10 @@ class BodysizeView(FlaskView):
             print('form not valid')
             # TODO: return errors
             return '', 200
+
+    @login_required
+    def delete(self, id):
+        body_size = BodySize.query.get(int(id))
+        db.session.delete(body_size)
+        db.session.commit()
+        return '', 200
