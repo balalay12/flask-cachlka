@@ -33,6 +33,9 @@
           .save($scope.bodySize, function() {
             $rootScope.$broadcast("bodySizeEdited");
             $scope.cancel();
+          },
+          function(error) {
+            $scope.error = error.data.error;
           })
       }
 
@@ -42,6 +45,9 @@
           .update({id:$scope.bodySize.id}, $scope.bodySize, function() {
             $rootScope.$broadcast("bodySizeEdited");
             $scope.cancel();
+          },
+          function(error) {
+            $scope.error = error.data.error;
           })
       }
 
@@ -50,6 +56,9 @@
           .delete({id: $rootScope.bodySizeId}, function() {
             $rootScope.$broadcast("bodySizeEdited");
             $scope.cancel();
+          },
+          function(error) {
+            $scope.error = error.data.error;
           });
       }
 

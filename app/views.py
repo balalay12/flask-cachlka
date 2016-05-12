@@ -119,10 +119,11 @@ class BodysizeView(FlaskView):
                 'weight': form.weight.data
             })
             db.session.commit()
-            return '', 200
+            return '', 409
         else:
-            # TODO: return error
-            return '', 200
+            response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
+            response.status_code = 409
+            return response
 
     @login_required
     def post(self):
@@ -141,13 +142,18 @@ class BodysizeView(FlaskView):
             db.session.commit()
             return '', 201
         else:
-            print('form not valid')
-            # TODO: return errors
-            return '', 200
+            response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
+            response.status_code = 409
+            return response
 
     @login_required
     def delete(self, id):
         body_size = BodySize.query.get(int(id))
         db.session.delete(body_size)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            response = jsonify(error='Произошла ошибка. Попробуйте позже')
+            response.status_code = 404
+            return response
         return '', 200
