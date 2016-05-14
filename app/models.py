@@ -51,3 +51,19 @@ class BodySize(db.Model):
             'arm': self.arm,
             'weight': self.weight
         }
+
+
+class Categories(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    exercises = db.relationship('Exercise', backref='exercises', lazy='dynamic')
+
+
+class Exercise(db.Model):
+    __tablename__ = 'exercises'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))

@@ -119,7 +119,7 @@ class BodysizeView(FlaskView):
                 'weight': form.weight.data
             })
             db.session.commit()
-            return '', 409
+            return '', 200
         else:
             response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
             response.status_code = 409
