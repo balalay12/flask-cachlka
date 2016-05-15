@@ -38,16 +38,16 @@ angular
 				template: '<ui-view/>',
 				controller: 'logoutCtrl'
 			})
-//			.state('main.diary', {
-//				url: '/diary',
-//				templateUrl: template_dirs + '/diary/diary.html',
-//				controller: 'diaryCtrl as vm'
-//			})
-//			.state('main.day', {
-//				url: '/day/:date',
-//				templateUrl: template_dirs + '/view_day/view_day.html',
-//				controller: 'viewDayCtrl as vm'
-//			})
+			.state('home.diary', {
+				url: '/diary',
+				templateUrl: template_dirs + '/diary/diary.html',
+				controller: 'diaryCtrl as vm'
+			})
+			.state('home.day', {
+				url: '/day/:date',
+				templateUrl: template_dirs + '/view_day/view_day.html',
+				controller: 'viewDayCtrl as vm'
+			})
 			.state('home.profile', {
 				url: '/profile',
 				templateUrl: template_dirs + '/profile/profile.html',

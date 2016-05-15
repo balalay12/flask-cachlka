@@ -3,8 +3,8 @@ from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import desc
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, BodySizeForm
-from app.models import User, BodySize
+from app.forms import RegistrationForm, LoginForm, BodySizeForm, SetsForm
+from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
 from functools import wraps
 from datetime import date
 
@@ -83,6 +83,44 @@ class AccountView(FlaskView):
             return '', 200
         else:
             return '', 404
+
+
+class SetsView(FlaskView):
+    @login_required
+    def index(self):
+        print(current_user.sets.all())
+        return '', 200
+
+    @login_required
+    def post(self):
+        data = request.get_json()
+        for day in data:
+            print('1', day)
+            repeats = day.pop('repeats')
+            del day['exercise_name']
+            print('2', day)
+            form = SetsForm(data=day)
+            print('3', form.date.data, form.exercise.data)
+            if form.validate():
+                print('validate')
+                return '', 200
+            else:
+                print(form.errors)
+                return '', 200
+
+
+class CategoriesView(FlaskView):
+    @login_required
+    def index(self):
+        return jsonify(categories=[cat.serialize for cat in Categories.query.all()])
+
+
+class ExercisesView(FlaskView):
+    @route('/exercises_by_category/<id>', methods=['GET'])
+    @login_required
+    def exercises_by_category(self, id):
+        category = Categories.query.get(int(id))
+        return jsonify(exercises=[exercise.serialize for exercise in category.exercises])
 
 
 class ProfileView(FlaskView):

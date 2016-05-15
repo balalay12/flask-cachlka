@@ -24,3 +24,6 @@ from app import views, models
 views.AccountView.register(app)
 views.ProfileView.register(app)
 views.BodysizeView.register(app)
+views.SetsView.register(app)
+views.CategoriesView.register(app)
+views.ExercisesView.register(app)

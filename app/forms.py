@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, DateField, FloatField
+from wtforms import StringField, PasswordField, DateField, FloatField, IntegerField
 from wtforms.validators import DataRequired, Email
 
 
@@ -21,3 +21,8 @@ class BodySizeForm(Form):
     hip = FloatField('Hip')
     arm = FloatField('Arm')
     weight = FloatField('Weight')
+
+
+class SetsForm(Form):
+    date = DateField('Date')
+    exercise = IntegerField('Exercise')

@@ -1,0 +1,93 @@
+<div>
+	<div class="modal-header">
+		Добавить упражнение 
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal well" name="add_day_form" novalidate>
+			<fieldset>
+				<div class="form-group">
+					<label for="date">Выберите дату</label>
+					<p class="input-group">
+						<input type="text" class="form-control" uib-datepicker-popup="{$ format $}" ng-model="date" is-open="popup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                          <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+                          </span>
+					</p>
+				</div>
+				<!-- <div ng-if="training.length > 0"> -->
+					<table class="table table-striped table-hover ">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Упражнение</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="train in training">
+								<th>{$ training.indexOf(train) + 1 $}</th>
+								<th>{$ train.exercise_name $}</th>
+							</tr>
+						</tbody>
+					</table>
+					<!-- <input type="button" class="btn btn-success pull-right" ng-click="submit()" value="Добавить"/> -->
+				<!-- </div> -->
+				<hr/>
+				<div class="form-group" ng-show="date">
+					<label for="select" class="control-label">Выберите категорию упражнения</label>
+					<div>
+						<select class="form-control" id="select" ng-model="cat" ng-options="category.name for category in categories">
+						</select>
+					</div>
+				</div>
+				<div class="form-group" ng-show="date">
+					<label for="select" class="control-label">Выберите упражнениe</label>
+					<div>
+						<select class="form-control" id="select" ng-model="exercise" ng-options="exercise.name for exercise in exercises">
+						</select>
+					</div>
+				</div>
+				<div class="row" ng-show="exercise">
+					<div class="col-md-5">
+						<input class="form-control input-group-md" type="number" ng-model="weight" min="1" placeholder="Вес" required />
+					</div>
+					<div class="col-md-5">
+						<input class="form-control input-group-md" type="number" ng-model="repeats" min="1" placeholder="Повторения" required />
+					</div>
+					<div class="col-md-2">
+						<input class="form-control btn btn-success" type="button" value="+" ng-click="addSet()" ng-disabled="add_day_form.$invalid" />
+					</div>
+					<div ng-if="weight <= 0 || repeats <= 0">
+						<div ng-show>`23</div>
+					</div>
+					<div ng-show="sets">
+						<table class="table table-striped table-hover ">
+							<thead>
+								<tr>
+									<th>Вес</th>
+									<th>Повторения</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="set in sets">
+									<th>{$ set.weight $}</th>
+									<th>{$ set.repeats $}</th>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="form_group" >
+						<div class="col-sm-12" ng-if="sets.length > 0">
+							<input type="button" class="btn btn-success pull-right" ng-click="addExercise()" value="Добавить упражнение"/>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<div ng-if="training.length > 0">
+			<input type="button" class="btn btn-success pull-right" ng-click="submit()" value="Добавить"/>
+		</div>	
+        <button class="btn btn-warning pull-left" type="button" ng-click="cancel()">Закрыть</button>
+	</div>
+</div>

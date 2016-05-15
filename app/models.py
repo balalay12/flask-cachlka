@@ -6,6 +6,7 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(64))
+    sets = db.relationship('Sets', backref='sets', lazy='dynamic')
 
     @property
     def serialize(self):
@@ -60,6 +61,16 @@ class Categories(db.Model):
     name = db.Column(db.String(255))
     exercises = db.relationship('Exercise', backref='exercises', lazy='dynamic')
 
+    def __repr__(self):
+        return '%s' % self.name
+
+    @property
+    def serialize(self):
+        return {
+            'category_id': self.id,
+            'name': self.name
+        }
+
 
 class Exercise(db.Model):
     __tablename__ = 'exercises'
@@ -67,3 +78,31 @@ class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+
+    @property
+    def serialize(self):
+        return {
+            'exercise_id': self.id,
+            'name': self.name,
+            'category_id': self.category_id,
+            'category_name': str(Categories.query.get(self.category_id))
+        }
+
+
+class Sets(db.Model):
+    __tablename__ = 'sets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'))
+    repeats = db.relationship('Repeats', backref='repeats', lazy='dynamic')
+
+
+class Repeats(db.Model):
+    __tablename__ = 'repeats'
+
+    id = db.Column(db.Integer, primary_key=True)
+    set_id = db.Column(db.Integer, db.ForeignKey('sets.id'))
+    weight = db.Column(db.Float)
+    repeat = db.Column(db.Integer)

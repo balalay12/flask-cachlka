@@ -7,7 +7,7 @@
 		.factory('categoryFactory', function($resource) {
 
 			function categories() {
-				return $resource('/api/categories/');
+				return $resource('/categories/');
 			}
 
 			return {
