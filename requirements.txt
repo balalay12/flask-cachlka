@@ -7,3 +7,4 @@ SQLAlchemy==1.0.12
 Flask-WTF==0.12
 Flask-Login==0.3.2
 flask-classy==0.6.10
+trafaret==0.7.1

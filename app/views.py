@@ -7,6 +7,7 @@ from app.forms import RegistrationForm, LoginForm, BodySizeForm, SetsForm
 from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
 from functools import wraps
 from datetime import date
+from collections import defaultdict
 import trafaret as t
 
 
@@ -89,8 +90,12 @@ class AccountView(FlaskView):
 class SetsView(FlaskView):
     @login_required
     def index(self):
-        print(current_user.sets.all())
-        return '', 200
+        out_data = defaultdict(list)
+        sets = [day.serialize for day in current_user.sets.all()]
+        for item in sets:
+            out_data[item['date']].append(item)
+        # print(out_data)
+        return jsonify(sets=out_data)
 
     @login_required
     def post(self):

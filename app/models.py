@@ -98,12 +98,23 @@ class Sets(db.Model):
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'))
     repeats = db.relationship('Repeats', backref='repeats', lazy='dynamic')
 
-    # @property
-    # def serialize(self, id):
-    #     repeats = Repeats.query.filter_by(set_id=id)
-    #     return {
-    #
-    #     }
+    @property
+    def serialize(self):
+        repeats = list()
+        sets = dict()
+        r = Repeats.query.filter_by(set_id=self.id)
+        exercise = Exercise.query.get(self.exercise_id)
+        for repeat in r:
+            repeats.append({'weight': repeat.weight, 'repeats': repeat.repeat, 'repeats_id': repeat.id})
+        sets['exercise_name'] = exercise.name
+        sets['category_id'] = exercise.category_id
+        sets['category_name'] = str(Categories.query.get(exercise.category_id))
+        sets['repeats'] = repeats
+        return {
+            'date': self.date.strftime("%Y-%m-%d"),
+            'set_id': self.id,
+            'items': sets
+        }
 
 
 class Repeats(db.Model):
