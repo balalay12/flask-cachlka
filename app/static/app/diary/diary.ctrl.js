@@ -14,7 +14,7 @@
 
 			var allSets = function() {
 				setsFactory.getAllSets(function(data) {
-						vm.sets = data;
+						vm.sets = data.sets;
 					});
 			};
 			allSets();

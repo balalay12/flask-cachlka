@@ -7,6 +7,7 @@ from app.forms import RegistrationForm, LoginForm, BodySizeForm, SetsForm
 from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
 from functools import wraps
 from datetime import date
+import trafaret as t
 
 
 def check_login(func):
@@ -93,20 +94,43 @@ class SetsView(FlaskView):
 
     @login_required
     def post(self):
+        tSet = t.Dict({
+            t.Key('date') >> 'date': t.String,
+            t.Key('exercise') >> 'exercise': t.Int,
+        })
+        tRepeats = t.Dict({
+            t.Key('weight') >> 'weight': t.Float,
+            t.Key('repeats') >> 'repeats': t.Int
+        })
         data = request.get_json()
         for day in data:
-            print('1', day)
             repeats = day.pop('repeats')
             del day['exercise_name']
-            print('2', day)
-            form = SetsForm(data=day)
-            print('3', form.date.data, form.exercise.data)
-            if form.validate():
-                print('validate')
-                return '', 200
-            else:
-                print(form.errors)
-                return '', 200
+            try:
+                assert tSet.check(day)
+                day_check = tSet.check(day)
+                year, month, day = day_check['date'].split('-')
+                sets = Sets(
+                    date=date(int(year), int(month), int(day)),
+                    exercise_id=day_check['exercise'],
+                    user_id=current_user.id
+                )
+                db.session.add(sets)
+                db.session.flush()
+                for repeat in repeats:
+                    assert tRepeats.check(repeat)
+                    repeat_instance = Repeats(
+                        set_id=sets.id,
+                        weight=repeat['weight'],
+                        repeat=repeat['repeats'],
+                    )
+                    db.session.add(repeat_instance)
+                    db.session.flush()
+            except t.DataError as e:
+                print(e)
+                return '', 404
+        db.session.commit()
+        return '', 201
 
 
 class CategoriesView(FlaskView):
@@ -120,7 +144,7 @@ class ExercisesView(FlaskView):
     @login_required
     def exercises_by_category(self, id):
         category = Categories.query.get(int(id))
-        return jsonify(exercises=[exercise.serialize for exercise in category.exercises])
+        return jsonify(exercises=[exercise.serialize for exercise in category.exercises.all()])
 
 
 class ProfileView(FlaskView):
@@ -165,6 +189,7 @@ class BodysizeView(FlaskView):
 
     @login_required
     def post(self):
+        print(request.get_json())
         form = BodySizeForm(data=request.get_json())
         if form.validate():
             body_ize = BodySize(

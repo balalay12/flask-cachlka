@@ -98,6 +98,13 @@ class Sets(db.Model):
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'))
     repeats = db.relationship('Repeats', backref='repeats', lazy='dynamic')
 
+    # @property
+    # def serialize(self, id):
+    #     repeats = Repeats.query.filter_by(set_id=id)
+    #     return {
+    #
+    #     }
+
 
 class Repeats(db.Model):
     __tablename__ = 'repeats'

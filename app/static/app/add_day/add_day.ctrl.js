@@ -15,6 +15,7 @@
 				if(angular.isDefined(oldVal) | angular.isDefined(newVal)) {
 					exerciseFactory.exercises_by_category()
 						.get({id:newVal.category_id}, function(data) {
+						console.log(data);
 						$scope.exercises = data.exercises;
 					});
 				}
