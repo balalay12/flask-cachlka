@@ -6,7 +6,7 @@
 		.module('app')
 		.factory('setsFactory', function($resource) {
 
-			return $resource('/sets/', {}, {
+			return $resource('/sets/:month/:year', null, {
 				'getAllSets': {
 					method: 'GET',
 					isArray: false

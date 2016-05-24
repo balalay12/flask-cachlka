@@ -3,12 +3,13 @@ from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import desc
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, BodySizeForm, SetsForm
+from app.forms import RegistrationForm, LoginForm, BodySizeForm
 from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
 from functools import wraps
 from datetime import datetime
 from collections import defaultdict
 import trafaret as t
+import calendar
 
 
 def check_login(func):
@@ -89,7 +90,19 @@ class SetsView(FlaskView):
 
     def index(self):
         out_data = defaultdict(list)
-        sets = [day.serialize for day in current_user.sets.all()]
+        dates = get_dates(datetime.today().month, datetime.today().year)
+        sets = [day.serialize for day in current_user.sets.filter(Sets.date >= dates['start'],
+                                                                  Sets.date <= dates['end']).all()]
+        for item in sets:
+            out_data[item['date']].append(item)
+        return jsonify(sets=out_data)
+
+    @route('/<month>/<year>', methods=['GET'])
+    def sets_for_months(self, month, year):
+        dates = get_dates(month, year)
+        out_data = defaultdict(list)
+        sets = [day.serialize for day in current_user.sets.filter(Sets.date >= dates['start'],
+                                                                  Sets.date <= dates['end']).all()]
         for item in sets:
             out_data[item['date']].append(item)
         return jsonify(sets=out_data)
@@ -213,3 +226,10 @@ class BodysizeView(FlaskView):
             response.status_code = 404
             return response
         return '', 200
+
+
+def get_dates(month, year):
+    last_day = calendar.monthrange(int(year), int(month))[1]
+    start = datetime(year=int(year), month=int(month), day=1)
+    end = datetime(year=int(year), month=int(month), day=last_day)
+    return {'start': start, 'end': end}
