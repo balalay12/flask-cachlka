@@ -6,7 +6,7 @@ from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, BodySizeForm, SetsForm
 from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
 from functools import wraps
-from datetime import date
+from datetime import datetime
 from collections import defaultdict
 import trafaret as t
 
@@ -41,10 +41,9 @@ class AccountView(FlaskView):
             db.session.add(user)
             db.session.commit()
             return '', 201
-        else:
-            response = jsonify(error='Что-то пошло не так. Попробуйте позже.')
-            response.status_code = 404
-            return response
+        response = jsonify(error='Что-то пошло не так. Попробуйте позже.')
+        response.status_code = 404
+        return response
 
     @route('/login/', methods=['POST'])
     @check_login
@@ -59,10 +58,9 @@ class AccountView(FlaskView):
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return '', 200
-            else:
-                response = jsonify(error='Не правильно введен логин или пароль')
-                response.status_code = 404
-                return response
+            response = jsonify(error='Не правильно введен логин или пароль')
+            response.status_code = 404
+            return response
 
     @login_required
     def logout(self):
@@ -83,21 +81,19 @@ class AccountView(FlaskView):
             unique = User.query.filter_by(email=data['email']).first()
         if not unique:
             return '', 200
-        else:
-            return '', 404
+        return '', 404
 
 
 class SetsView(FlaskView):
-    @login_required
+    decorators = [login_required]
+
     def index(self):
         out_data = defaultdict(list)
         sets = [day.serialize for day in current_user.sets.all()]
         for item in sets:
             out_data[item['date']].append(item)
-        # print(out_data)
         return jsonify(sets=out_data)
 
-    @login_required
     def post(self):
         tSet = t.Dict({
             t.Key('date') >> 'date': t.String,
@@ -114,9 +110,8 @@ class SetsView(FlaskView):
             try:
                 assert tSet.check(day)
                 day_check = tSet.check(day)
-                year, month, day = day_check['date'].split('-')
                 sets = Sets(
-                    date=date(int(year), int(month), int(day)),
+                    date=datetime.strptime(day_check['date'], '%Y-%m-%d'),
                     exercise_id=day_check['exercise'],
                     user_id=current_user.id
                 )
@@ -139,46 +134,46 @@ class SetsView(FlaskView):
 
 
 class CategoriesView(FlaskView):
-    @login_required
+    decorators = [login_required]
+
     def index(self):
         return jsonify(categories=[cat.serialize for cat in Categories.query.all()])
 
 
 class ExercisesView(FlaskView):
+    decorators = [login_required]
+
     @route('/exercises_by_category/<id>', methods=['GET'])
-    @login_required
     def exercises_by_category(self, id):
         category = Categories.query.get(int(id))
         return jsonify(exercises=[exercise.serialize for exercise in category.exercises.all()])
 
 
 class ProfileView(FlaskView):
-    @login_required
+    decorators = [login_required]
+
     def index(self):
         return jsonify(current_user.serialize)
 
-    @login_required
     def change_password(self):
         pass
 
 
 class BodysizeView(FlaskView):
-    @login_required
+    decorators = [login_required]
+
     def index(self):
         return jsonify(body_size=[bs.serialize for bs in BodySize.query.order_by(desc(BodySize.date)).limit(10).all()])
 
-    @login_required
     def get(self, id):
         body_size = BodySize.query.get(int(id))
         return jsonify(body_size=body_size.serialize)
 
-    @login_required
     def patch(self, id):
         form = BodySizeForm(data=request.get_json())
         if form.validate():
-            year, month, day = form.date.data.split('-')
             BodySize.query.filter_by(id=int(id)).update({
-                'date': date(int(year), int(month), int(day)),
+                'date': datetime.strptime(form.date.data, '%Y-%m-%d'),
                 'hip': form.hip.data,
                 'waist': form.waist.data,
                 'chest': form.chest.data,
@@ -187,14 +182,11 @@ class BodysizeView(FlaskView):
             })
             db.session.commit()
             return '', 200
-        else:
-            response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
-            response.status_code = 409
-            return response
+        response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
+        response.status_code = 409
+        return response
 
-    @login_required
     def post(self):
-        print(request.get_json())
         form = BodySizeForm(data=request.get_json())
         if form.validate():
             body_ize = BodySize(
@@ -209,12 +201,10 @@ class BodysizeView(FlaskView):
             db.session.add(body_ize)
             db.session.commit()
             return '', 201
-        else:
-            response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
-            response.status_code = 409
-            return response
+        response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
+        response.status_code = 409
+        return response
 
-    @login_required
     def delete(self, id):
         body_size = BodySize.query.get(int(id))
         db.session.delete(body_size)
