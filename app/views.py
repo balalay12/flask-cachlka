@@ -95,21 +95,20 @@ class SetsView(FlaskView):
         return jsonify(sets=out_data)
 
     def post(self):
-        tSet = t.Dict({
+        t_set = t.Dict({
             t.Key('date') >> 'date': t.String,
             t.Key('exercise') >> 'exercise': t.Int,
-        })
-        tRepeats = t.Dict({
-            t.Key('weight') >> 'weight': t.Float,
-            t.Key('repeats') >> 'repeats': t.Int
+            t.Key('exercise_name', optional=True) >> 'exercise_name': t.String,
+            t.Key('repeats') >> 'repeats': t.List(
+                t.Mapping(
+                    t.String, t.Float
+                )
+            )
         })
         data = request.get_json()
         for day in data:
-            repeats = day.pop('repeats')
-            del day['exercise_name']
             try:
-                assert tSet.check(day)
-                day_check = tSet.check(day)
+                day_check = t_set.check(day)
                 sets = Sets(
                     date=datetime.strptime(day_check['date'], '%Y-%m-%d'),
                     exercise_id=day_check['exercise'],
@@ -117,8 +116,7 @@ class SetsView(FlaskView):
                 )
                 db.session.add(sets)
                 db.session.flush()
-                for repeat in repeats:
-                    assert tRepeats.check(repeat)
+                for repeat in day_check['repeats']:
                     repeat_instance = Repeats(
                         set_id=sets.id,
                         weight=repeat['weight'],
