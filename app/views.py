@@ -107,6 +107,15 @@ class SetsView(FlaskView):
             out_data[item['date']].append(item)
         return jsonify(sets=out_data)
 
+    @route('/<date>', methods=['GET'])
+    def set_for_date(self, date):
+        out_data = defaultdict(list)
+        day=[day.serialize for day in current_user.sets.filter(
+            Sets.date == datetime.strptime(date, '%Y-%m-%d')).all()]
+        for item in day:
+            out_data[item['date']].append(item)
+        return jsonify(day=out_data)
+
     def post(self):
         t_set = t.Dict({
             t.Key('date') >> 'date': t.String,

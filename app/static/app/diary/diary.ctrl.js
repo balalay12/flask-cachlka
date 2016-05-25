@@ -14,7 +14,6 @@
 
 			var allSets = function() {
 				setsFactory.getAllSets(function(data) {
-				        console.log(data.sets);
 						vm.sets = data.sets;
 					});
 			};
@@ -68,8 +67,7 @@
 			}
 
 			function viewDay(_date) {
-				console.log(_date);
-				$state.go('main.day', {
+				$state.go('home.day', {
 					date: _date
 				});
 			}
