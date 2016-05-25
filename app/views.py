@@ -97,6 +97,10 @@ class SetsView(FlaskView):
             out_data[item['date']].append(item)
         return jsonify(sets=out_data)
 
+    def get(self, id):
+        one_set = current_user.sets.filter(Sets.id == id).first()
+        return jsonify(set=one_set.serialize)
+
     @route('/<month>/<year>', methods=['GET'])
     def sets_for_months(self, month, year):
         dates = get_dates(month, year)
@@ -107,8 +111,8 @@ class SetsView(FlaskView):
             out_data[item['date']].append(item)
         return jsonify(sets=out_data)
 
-    @route('/<date>', methods=['GET'])
-    def set_for_date(self, date):
+    @route('/by_date/<date>', methods=['GET'])
+    def sets_by_date(self, date):
         out_data = defaultdict(list)
         day=[day.serialize for day in current_user.sets.filter(
             Sets.date == datetime.strptime(date, '%Y-%m-%d')).all()]
@@ -128,6 +132,7 @@ class SetsView(FlaskView):
             )
         })
         data = request.get_json()
+        print(data)
         for day in data:
             try:
                 day_check = t_set.check(day)
@@ -151,6 +156,8 @@ class SetsView(FlaskView):
                 return '', 404
         db.session.commit()
         return '', 201
+
+    #TODO: patch
 
 
 class CategoriesView(FlaskView):

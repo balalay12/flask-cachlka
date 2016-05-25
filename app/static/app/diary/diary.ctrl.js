@@ -13,7 +13,7 @@
 			vm.viewDay = viewDay;
 
 			var allSets = function() {
-				setsFactory.getAllSets(function(data) {
+				setsFactory.get(function(data) {
 						vm.sets = data.sets;
 					});
 			};

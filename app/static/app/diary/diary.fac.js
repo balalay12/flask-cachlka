@@ -8,7 +8,12 @@
 
 			return $resource('/sets/:month/:year', null, {
 				'getAllSets': {
-					url: '/sets/:date',
+					url: '/sets/by_date/:date',
+					method: 'GET',
+					isArray: false
+				},
+				'getSet': {
+					url: '/sets/:id',
 					method: 'GET',
 					isArray: false
 				}
