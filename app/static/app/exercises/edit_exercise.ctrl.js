@@ -12,8 +12,8 @@
 				});
 
 			setsFactory.getSet({id: $rootScope.editSetId}, function(data) {
-				$scope.cat = {category_id:data.set.items.category_id, name:data.set.items.category_name};
-				$scope.exercise = {exercise_id: data.set.exercise, name:data.set.items.exercise_name};
+			    $scope.cat = {category_id:data.set.items.category_id, name:data.set.items.category_name};
+				$scope.exercise = {exercise_id: data.set.items.exercise_id, name:data.set.items.exercise_name};
 				$scope.date = new Date(data.set.date);
 			});
 
@@ -38,8 +38,8 @@
 			};
 
 			$scope.submit = function() {
-				var upd_exercise = {'date': $filter('date')($scope.date, 'yyyy-MM-dd'), 'exercise': $scope.exercise.exercise_id};
-				setsFactory.save({update:upd_exercise, id: $rootScope.editSetId}, function() {
+				var upd_exercise = {'exercise': $scope.exercise.exercise_id};
+				setsFactory.updateSet({id: $rootScope.editSetId}, upd_exercise, function() {
 					$rootScope.$broadcast('setsChanged');
 					$scope.cancel();;
 				});

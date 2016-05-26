@@ -23,6 +23,5 @@ class BodySizeForm(Form):
     weight = FloatField('Weight')
 
 
-class SetsForm(Form):
-    date = DateField('Date')
-    exercise = IntegerField('Exercise')
+class EditExercise(Form):
+    exercise = IntegerField('Exercise', validators=[DataRequired()])

@@ -107,6 +107,7 @@ class Sets(db.Model):
         for repeat in r:
             repeats.append({'weight': repeat.weight, 'repeats': repeat.repeat, 'repeats_id': repeat.id})
         sets['exercise_name'] = exercise.name
+        sets['exercise_id'] = exercise.id
         sets['category_id'] = exercise.category_id
         sets['category_name'] = str(Categories.query.get(exercise.category_id))
         sets['repeats'] = repeats

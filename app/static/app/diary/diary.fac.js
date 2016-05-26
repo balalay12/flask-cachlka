@@ -16,6 +16,10 @@
 					url: '/sets/:id',
 					method: 'GET',
 					isArray: false
+				},
+				'updateSet': {
+				    url: '/sets/:id',
+				    method: 'PATCH'
 				}
 			})
 		});

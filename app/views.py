@@ -3,7 +3,7 @@ from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import desc
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, BodySizeForm
+from app.forms import RegistrationForm, LoginForm, BodySizeForm, EditExercise
 from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
 from functools import wraps
 from datetime import datetime
@@ -157,7 +157,15 @@ class SetsView(FlaskView):
         db.session.commit()
         return '', 201
 
-    #TODO: patch
+    def patch(self, id):
+        form = EditExercise(data=request.get_json())
+        if form.validate():
+            Sets.query.filter_by(id=int(id)).update({
+                'exercise_id': form.exercise.data
+            })
+            db.session.commit()
+            return '', 200
+        return '', 404
 
 
 class CategoriesView(FlaskView):
