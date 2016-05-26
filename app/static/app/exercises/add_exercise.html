@@ -1,0 +1,64 @@
+<div>
+	<div class="modal-header">
+		Добавить упражнение 
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal well" name="add_exercise_form" novalidate>
+		<fieldset>
+			<div class="form-group">
+				<label for="cat" class="control-label">Выберите категорию упражнения</label>
+				<div>
+					<select class="form-control" id="cat" ng-model="cat" ng-options="category.name for category in categories">
+					</select>
+				</div>
+			</div>
+			<div class="form-group" ng-show="cat">
+				<label for="name" class="control-label">Выберите упражнениe</label>
+				<div>
+					<select class="form-control" id="name" ng-model="exercise" ng-options="exercise.name for exercise in exercises">
+					</select>
+				</div>
+			</div>
+            <!--<div class="form-group" ng-show="cat">
+				<label for="name" class="control-label">Выберите упражнениe</label>
+				<div>
+					<input type="text" ng-model="exercise" uib-typeahead="exercise.name for exercise in exercises | filter:$viewValue" class="form-control">
+				</div>
+			</div>-->
+			<div class="row" ng-show="exercise">
+				<div class="col-md-5">
+					<input class="form-control input-group-md" type="number" ng-model="weight" min="1" placeholder="Вес" required />
+				</div>
+				<div class="col-md-5">
+					<input class="form-control input-group-md" type="number" ng-model="repeats" min="1" placeholder="Повторения" required />
+				</div>
+				<div class="col-md-2">
+					<input class="form-control btn btn-success" type="button" value="+" ng-click="addSet()" ng-disabled="add_exercise_form.$invalid" />
+				</div>
+				<div ng-show="sets">
+					<table class="table table-striped table-hover ">
+						<thead>
+							<tr>
+								<th>Вес</th>
+								<th>Повторения</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="set in sets">
+								<th>{$ set.weight $}</th>
+								<th>{$ set.repeats $}</th>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+	</div>
+    <div class="modal-footer">
+    	<span ng-if="sets.length > 0">
+    	<input type="button" class="btn btn-success" ng-click="submit()" value="Добавить"/>
+    	</span>
+        <button class="btn btn-warning pull-left" type="button" ng-click="cancel()">Закрыть</button>
+	</div>
+</div>
