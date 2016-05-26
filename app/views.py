@@ -167,6 +167,20 @@ class SetsView(FlaskView):
             return '', 200
         return '', 404
 
+    def delete(self, id):
+        print(id)
+        exercise = Sets.query.get(int(id))
+        # repeats = Repeats.query.filter_by(set_id=int(id))
+        # db.session.delete(repeats)
+        db.session.delete(exercise)
+        try:
+            db.session.commit()
+        except Exception:
+            response = jsonify(error='Произошла ошибка. Попробуйте позже')
+            response.status_code = 404
+            return response
+        return '', 200
+
 
 class CategoriesView(FlaskView):
     decorators = [login_required]

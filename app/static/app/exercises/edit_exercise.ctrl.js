@@ -11,7 +11,7 @@
 					$scope.categories = data.categories;
 				});
 
-			setsFactory.getSet({id: $rootScope.editSetId}, function(data) {
+			setsFactory.get({id: $rootScope.editSetId}, function(data) {
 			    $scope.cat = {category_id:data.set.items.category_id, name:data.set.items.category_name};
 				$scope.exercise = {exercise_id: data.set.items.exercise_id, name:data.set.items.exercise_name};
 				$scope.date = new Date(data.set.date);

@@ -24,7 +24,7 @@
 			});
 
 			var getSetsByDate = function(_month, _year) {
-				setsFactory.getAllSets({month:_month, year: _year}, function(data) {
+				setsFactory.setsForMonth({month:_month, year: _year}, function(data) {
 					vm.sets = data.sets;
 				});
 			};
