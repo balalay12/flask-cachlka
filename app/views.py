@@ -170,8 +170,6 @@ class SetsView(FlaskView):
     def delete(self, id):
         print(id)
         exercise = Sets.query.get(int(id))
-        # repeats = Repeats.query.filter_by(set_id=int(id))
-        # db.session.delete(repeats)
         db.session.delete(exercise)
         try:
             db.session.commit()

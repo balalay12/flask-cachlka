@@ -96,7 +96,7 @@ class Sets(db.Model):
     date = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'))
-    repeats = db.relationship('Repeats', backref='repeats', lazy='dynamic')
+    repeats = db.relationship('Repeats', cascade=['delete'], backref='repeats', lazy='dynamic')
 
     @property
     def serialize(self):
