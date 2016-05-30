@@ -3,8 +3,8 @@ from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import desc
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, BodySizeForm, EditExercise
-from app.models import User, BodySize, Sets, Repeats, Categories, Exercise
+from app.forms import RegistrationForm, LoginForm, BodySizeForm, EditExercise, RepeatForm
+from app.models import User, BodySize, Sets, Repeats, Categories
 from functools import wraps
 from datetime import datetime
 from collections import defaultdict
@@ -171,6 +171,50 @@ class SetsView(FlaskView):
         print(id)
         exercise = Sets.query.get(int(id))
         db.session.delete(exercise)
+        try:
+            db.session.commit()
+        except Exception:
+            response = jsonify(error='Произошла ошибка. Попробуйте позже')
+            response.status_code = 404
+            return response
+        return '', 200
+
+
+class RepeatsView(FlaskView):
+    decorators = [login_required]
+
+    def get(self, id):
+        repeat = Repeats.query.get(int(id))
+        return jsonify(repeat=repeat.serialize)
+
+    def post(self):
+        form = RepeatForm(data=request.get_json())
+        if form.validate():
+            repeats = Repeats(
+                set_id=form.set.data,
+                weight=form.weight.data,
+                repeat=form.repeats.data,
+            )
+            db.session.add(repeats)
+            db.session.commit()
+            return '', 201
+        return 409
+
+    def patch(self, id):
+        form = RepeatForm(data=request.get_json())
+        if form.validate():
+            Repeats.query.filter_by(id=int(id)).update({
+                'set_id': form.set.data,
+                'weight': form.weight.data,
+                'repeat': form.repeats.data
+            })
+            db.session.commit()
+            return '', 200
+        return '', 409
+
+    def delete(self, id):
+        r = Repeats.query.get(int(id))
+        db.session.delete(r)
         try:
             db.session.commit()
         except Exception:

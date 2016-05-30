@@ -105,7 +105,7 @@ class Sets(db.Model):
         r = Repeats.query.filter_by(set_id=self.id)
         exercise = Exercise.query.get(self.exercise_id)
         for repeat in r:
-            repeats.append({'weight': repeat.weight, 'repeats': repeat.repeat, 'repeats_id': repeat.id})
+            repeats.append({'weight': repeat.weight, 'repeats': repeat.repeat, 'repeat_id': repeat.id})
         sets['exercise_name'] = exercise.name
         sets['exercise_id'] = exercise.id
         sets['category_id'] = exercise.category_id
@@ -125,3 +125,11 @@ class Repeats(db.Model):
     set_id = db.Column(db.Integer, db.ForeignKey('sets.id'))
     weight = db.Column(db.Float)
     repeat = db.Column(db.Integer)
+
+    @property
+    def serialize(self):
+        return {
+            'weight': self.weight,
+            'repeats': self.repeat,
+            'set': self.set_id
+        }

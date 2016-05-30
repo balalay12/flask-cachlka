@@ -25,3 +25,9 @@ class BodySizeForm(Form):
 
 class EditExercise(Form):
     exercise = IntegerField('Exercise', validators=[DataRequired()])
+
+
+class RepeatForm(Form):
+    set = IntegerField('Set', validators=[DataRequired()])
+    weight = FloatField('Weight', validators=[DataRequired()])
+    repeats = IntegerField('Repeats', validators=[DataRequired()])
