@@ -15,6 +15,10 @@
 				'updateSet': {
 				    url: '/sets/:id',
 				    method: 'PATCH'
+				},
+				'setsForMonth': {
+				    method: 'GET',
+				    url: '/sets/:month/:year'
 				}
 			})
 		});
