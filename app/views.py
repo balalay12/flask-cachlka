@@ -84,6 +84,24 @@ class AccountView(FlaskView):
             return '', 200
         return '', 404
 
+    @login_required
+    @route('/change_password/', methods=['POST'])
+    def change_password(self):
+        data = request.get_json()
+        if not bcrypt.check_password_hash(current_user.password, data['old']):
+            response = jsonify(error='Старый пароль введен не верно')
+            response.status_code = 404
+            return response
+        if not data['new'] == data['confirm']:
+            response = jsonify(error='Новый пароль и подтверждение пароля не совпадают')
+            response.status_code = 404
+            return response
+        User.query.filter_by(id=current_user.id).update({
+            'password': bcrypt.generate_password_hash(data['new'])
+        })
+        db.session.commit()
+        return '', 200
+
 
 class SetsView(FlaskView):
     decorators = [login_required]
@@ -168,7 +186,6 @@ class SetsView(FlaskView):
         return '', 404
 
     def delete(self, id):
-        print(id)
         exercise = Sets.query.get(int(id))
         db.session.delete(exercise)
         try:
@@ -245,9 +262,6 @@ class ProfileView(FlaskView):
 
     def index(self):
         return jsonify(current_user.serialize)
-
-    def change_password(self):
-        pass
 
 
 class BodysizeView(FlaskView):

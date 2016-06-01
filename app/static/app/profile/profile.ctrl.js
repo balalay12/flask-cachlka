@@ -9,7 +9,8 @@
 			var vm = this;
 
 			vm.addBodySize = addBodySize;
-			vm.editBodySize = editBodySize
+			vm.editBodySize = editBodySize;
+			vm.changePassword = changePassword;
 
 			profileFactory.userProfile()
 				.get(function(data) {
@@ -42,6 +43,13 @@
 					templateUrl: template_dirs + "/bodysize/body_size.html",
 					controller: "bodySizeCtrl"
 				})
+			}
+
+			function changePassword() {
+			    var changePasswordModel = $uibModal.open({
+			        templateUrl: template_dirs + "/profile/change_password/change_password.html",
+			        controller: "changePasswordCtrl"
+			    })
 			}
 
 		});

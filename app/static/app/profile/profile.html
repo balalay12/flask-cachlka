@@ -2,6 +2,7 @@
     <h3>Профиль пользователя</h3>
     Ник: {$ vm.user.username $} <br/>
     Эл. почта: {$ vm.user.email $} <br/>
+    <a ng-click="vm.changePassword()">Изменить пароль</a>
     <hr>
     <h3>Замеры тела</h3>
     <button class="btn btn-primary" ng-click="vm.addBodySize()">Добавить замеры</button>
