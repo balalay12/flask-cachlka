@@ -3,10 +3,9 @@
 </div>
 <div class="col-md-9">
     <div class="row">
-        <div class="col-md-12">
-            <a class="btn btn-default" ng-click="vm.monthDecrement()"><< прошлый месяц</a>
-            <a class="btn btn-default pull-right" ng-click="vm.monthIncrement()">следующий месяц >></a>
-        </div>
+        <div class="col-sm-4"><a class="btn btn-default" ng-click="vm.monthDecrement()"><< прошлый месяц</a></div>
+        <div class="align-center col-sm-4">{$ vm.date | date: 'MMMM yyyy' $}</div>
+        <div class="col-sm-4"><a class="btn btn-default pull-right" ng-click="vm.monthIncrement()">следующий месяц >></a></div>
     </div>
 
     <div class="panel panel-primary" ng-repeat="(date, items) in vm.sets">

@@ -32,16 +32,17 @@
 			var myDate = new Date();
 			var month = myDate.getMonth() + 1;
 			var year = myDate.getFullYear();
+			vm.date = new Date(year, month, 0);
 
 			function monthIncrement() {
 				if(month >= 12) {
 			        month = 1;
 			        year = year + 1;
-			        console.log(month, year);
+			        vm.date = new Date(year, month, 0);
 			        getSetsByDate(month, year)
 			    } else {
 			        month = month + 1;
-			        console.log(month, year);
+			        vm.date = new Date(year, month, 0);
 			        getSetsByDate(month, year)
 			    }
 			}
@@ -50,11 +51,11 @@
 				if(month <= 1) {
 			        month = 12;
 			        year = year - 1;
-			        console.log(month, year);
+			        vm.date = new Date(year, month, 0);
 			        getSetsByDate(month, year)
 			    } else {
 			        month = month - 1;
-			        console.log(month, year);
+			        vm.date = new Date(year, month, 0);
 			        getSetsByDate(month, year)
 		        }
 			}
