@@ -9,7 +9,7 @@ app = Flask(__name__)
 login_manager = LoginManager()
 app.config.from_object('config')
 
-CsrfProtect(app)
+# CsrfProtect(app)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager.init_app(app)

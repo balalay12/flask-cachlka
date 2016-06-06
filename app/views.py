@@ -1,15 +1,17 @@
+import trafaret as t
+import calendar
+
 from flask import render_template, jsonify
 from flask_classy import FlaskView, request, route
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import desc
+from sqlalchemy.exc import SQLAlchemyError
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, BodySizeForm, EditExercise, RepeatForm
 from app.models import User, BodySize, Sets, Repeats, Categories
 from functools import wraps
 from datetime import datetime
 from collections import defaultdict
-import trafaret as t
-import calendar
 
 
 def check_login(func):
@@ -39,29 +41,32 @@ class AccountView(FlaskView):
                 email=form.email.data,
                 password=bcrypt.generate_password_hash(form.password.data)
             )
-            db.session.add(user)
-            db.session.commit()
-            return '', 201
-        response = jsonify(error='Что-то пошло не так. Попробуйте позже.')
-        response.status_code = 404
-        return response
+            try:
+                db.session.add(user)
+                db.session.commit()
+                return '', 201
+            except SQLAlchemyError as e:
+                # TODO: loging exeption e
+                db.session.rollback()
+                return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
+        return return_response(404, jsonify(error='Не вверно введены данные.'))
 
     @route('/login/', methods=['POST'])
     @check_login
     def login(self):
         form = LoginForm(data=request.get_json())
         if form.validate():
-            user = User.query.filter_by(username=form.username.data).first()
+            try:
+                user = User.query.filter_by(username=form.username.data).first()
+            except SQLAlchemyError as e:
+                # TODO: loging exeption e
+                return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
             if user is None:
-                response = jsonify(error='Пользователь не найден')
-                response.status_code = 404
-                return response
+                return return_response(404, jsonify(error='Пользователь не найден'))
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
                 return '', 200
-            response = jsonify(error='Не правильно введен логин или пароль')
-            response.status_code = 404
-            return response
+            return return_response(404, jsonify(error='Не правильно введен логин или пароль'))
 
     @login_required
     def logout(self):
@@ -218,19 +223,24 @@ class RepeatsView(FlaskView):
         return 409
 
     def patch(self, id):
+        r = Repeats.query.get(int(id))
+        s = Sets.query.get(r.set_id)
+        if not s.user_id == current_user.id:
+            return response_access_denied()
         form = RepeatForm(data=request.get_json())
         if form.validate():
-            Repeats.query.filter_by(id=int(id)).update({
-                'set_id': form.set.data,
-                'weight': form.weight.data,
-                'repeat': form.repeats.data
-            })
+            r.set_id = form.set.data
+            r.weight = form.weight.data
+            r.repeat = form.repeats.data
             db.session.commit()
             return '', 200
         return '', 409
 
     def delete(self, id):
         r = Repeats.query.get(int(id))
+        s = Sets.query.get(r.set_id)
+        if not s.user_id == current_user.id:
+            return response_access_denied()
         db.session.delete(r)
         try:
             db.session.commit()
@@ -276,15 +286,16 @@ class BodysizeView(FlaskView):
 
     def patch(self, id):
         form = BodySizeForm(data=request.get_json())
+        bs = BodySize.query.filter_by(id=int(id)).first()
+        if not bs.user_id == current_user.id:
+            return response_access_denied()
         if form.validate():
-            BodySize.query.filter_by(id=int(id)).update({
-                'date': datetime.strptime(form.date.data, '%Y-%m-%d'),
-                'hip': form.hip.data,
-                'waist': form.waist.data,
-                'chest': form.chest.data,
-                'arm': form.arm.data,
-                'weight': form.weight.data
-            })
+            bs.date = datetime.strptime(form.date.data, '%Y-%m-%d')
+            bs.hip = form.hip.data
+            bs.waist = form.waist.data
+            bs.chest = form.chest.data
+            bs.arm = form.arm.data
+            bs.weight = form.weight.data
             db.session.commit()
             return '', 200
         response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
@@ -312,6 +323,8 @@ class BodysizeView(FlaskView):
 
     def delete(self, id):
         body_size = BodySize.query.get(int(id))
+        if not body_size.user_id == current_user.id:
+            return response_access_denied()
         db.session.delete(body_size)
         try:
             db.session.commit()
@@ -327,3 +340,14 @@ def get_dates(month, year):
     start = datetime(year=int(year), month=int(month), day=1)
     end = datetime(year=int(year), month=int(month), day=last_day)
     return {'start': start, 'end': end}
+
+
+def return_response(status, msg):
+    response = msg
+    response.status_code = status
+    return response
+
+def response_access_denied():
+    response = jsonify(error='Отказано в доступе')
+    response.status_code = 404
+    return response
