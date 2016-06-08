@@ -47,13 +47,13 @@ class Tests(BaseTestCase):
     #     response_username = self.client.post('/account/check_unique/', data=dict(email="admin"))
     #     self.assertEqual(response_username.status_code, 404)
 
-    def test_password_change(self):
-        """TEST: change password"""
-
-        login = self.client.post('/account/login/', data=dict(username="admin", password="admin"))
-        response = self.client.post('/account/change_password/', data=dict(old='admin', new='newadmin', confirm='newadmin'))
-        print(response.data)
-        self.assertEqual(response.status_code, 200)
+    # def test_password_change(self):
+    #     """TEST: change password"""
+    #
+    #     login = self.client.post('/account/login/', data=dict(username="admin", password="admin"))
+    #     response = self.client.post('/account/change_password/', data=dict(old='admin', new='newadmin', confirm='newadmin'))
+    #     print(response.data)
+    #     self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()

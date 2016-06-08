@@ -113,22 +113,31 @@ class SetsView(FlaskView):
     def index(self):
         out_data = defaultdict(list)
         dates = get_dates(datetime.today().month, datetime.today().year)
-        sets = [day.serialize for day in current_user.sets.filter(Sets.date >= dates['start'],
-                                                                  Sets.date <= dates['end']).all()]
+        try:
+            sets = [day.serialize for day in current_user.sets.filter(Sets.date >= dates['start'],
+                                                                      Sets.date <= dates['end']).all()]
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         for item in sets:
             out_data[item['date']].append(item)
         return jsonify(sets=out_data)
 
     def get(self, id):
-        one_set = current_user.sets.filter(Sets.id == id).first()
+        try:
+            one_set = current_user.sets.filter(Sets.id == id).first()
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return jsonify(set=one_set.serialize)
 
     @route('/<month>/<year>', methods=['GET'])
     def sets_for_months(self, month, year):
         dates = get_dates(month, year)
         out_data = defaultdict(list)
-        sets = [day.serialize for day in current_user.sets.filter(Sets.date >= dates['start'],
-                                                                  Sets.date <= dates['end']).all()]
+        try:
+            sets = [day.serialize for day in current_user.sets.filter(Sets.date >= dates['start'],
+                                                                      Sets.date <= dates['end']).all()]
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         for item in sets:
             out_data[item['date']].append(item)
         return jsonify(sets=out_data)
@@ -136,8 +145,11 @@ class SetsView(FlaskView):
     @route('/by_date/<date>', methods=['GET'])
     def sets_by_date(self, date):
         out_data = defaultdict(list)
-        day=[day.serialize for day in current_user.sets.filter(
-            Sets.date == datetime.strptime(date, '%Y-%m-%d')).all()]
+        try:
+            day=[day.serialize for day in current_user.sets.filter(
+                Sets.date == datetime.strptime(date, '%Y-%m-%d')).all()]
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         for item in day:
             out_data[item['date']].append(item)
         return jsonify(day=out_data)
@@ -154,7 +166,6 @@ class SetsView(FlaskView):
             )
         })
         data = request.get_json()
-        print(data)
         for day in data:
             try:
                 day_check = t_set.check(day)
@@ -176,17 +187,24 @@ class SetsView(FlaskView):
             except t.DataError as e:
                 print(e)
                 return '', 404
-        db.session.commit()
+        try:
+            db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return '', 201
 
     def patch(self, id):
         form = EditExercise(data=request.get_json())
-        if form.validate():
-            Sets.query.filter_by(id=int(id)).update({
-                'exercise_id': form.exercise.data
-            })
-            db.session.commit()
-            return '', 200
+        try:
+            if form.validate():
+                Sets.query.filter_by(id=int(id)).update({
+                    'exercise_id': form.exercise.data
+                })
+                db.session.commit()
+                return '', 200
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return '', 404
 
     def delete(self, id):
@@ -205,7 +223,10 @@ class RepeatsView(FlaskView):
     decorators = [login_required]
 
     def get(self, id):
-        repeat = Repeats.query.get(int(id))
+        try:
+            repeat = Repeats.query.get(int(id))
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return jsonify(repeat=repeat.serialize)
 
     def post(self):
@@ -225,7 +246,7 @@ class RepeatsView(FlaskView):
         r = Repeats.query.get(int(id))
         s = Sets.query.get(r.set_id)
         if not s.user_id == current_user.id:
-            return response_access_denied()
+            return return_response(404, jsonify(error='Отказано в доступе'))
         form = RepeatForm(data=request.get_json())
         if form.validate():
             r.set_id = form.set.data
@@ -239,7 +260,7 @@ class RepeatsView(FlaskView):
         r = Repeats.query.get(int(id))
         s = Sets.query.get(r.set_id)
         if not s.user_id == current_user.id:
-            return response_access_denied()
+            return return_response(404, jsonify(error='Отказано в доступе'))
         db.session.delete(r)
         try:
             db.session.commit()
@@ -280,23 +301,29 @@ class BodysizeView(FlaskView):
         return jsonify(body_size=[bs.serialize for bs in BodySize.query.order_by(desc(BodySize.date)).limit(10).all()])
 
     def get(self, id):
-        body_size = BodySize.query.get(int(id))
+        try:
+            body_size = BodySize.query.get(int(id))
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return jsonify(body_size=body_size.serialize)
 
     def patch(self, id):
         form = BodySizeForm(data=request.get_json())
-        bs = BodySize.query.filter_by(id=int(id)).first()
-        if not bs.user_id == current_user.id:
-            return response_access_denied()
-        if form.validate():
-            bs.date = datetime.strptime(form.date.data, '%Y-%m-%d')
-            bs.hip = form.hip.data
-            bs.waist = form.waist.data
-            bs.chest = form.chest.data
-            bs.arm = form.arm.data
-            bs.weight = form.weight.data
-            db.session.commit()
-            return '', 200
+        try:
+            bs = BodySize.query.filter_by(id=int(id)).first()
+            if not bs.user_id == current_user.id:
+                return return_response(404, jsonify(error='Отказано в доступе'))
+            if form.validate():
+                bs.date = datetime.strptime(form.date.data, '%Y-%m-%d')
+                bs.hip = form.hip.data
+                bs.waist = form.waist.data
+                bs.chest = form.chest.data
+                bs.arm = form.arm.data
+                bs.weight = form.weight.data
+                db.session.commit()
+                return '', 200
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
         response.status_code = 409
         return response
@@ -313,24 +340,24 @@ class BodysizeView(FlaskView):
                 weight=form.weight.data,
                 user_id=current_user.id
             )
-            db.session.add(body_ize)
-            db.session.commit()
-            return '', 201
-        response = jsonify(error='Не верно введенеы данные. Попробуйте снова.')
-        response.status_code = 409
-        return response
+            try:
+                db.session.add(body_ize)
+                db.session.commit()
+                return '', 201
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
+        return return_response(409, jsonify(error='Не верно введенеы данные. Попробуйте снова.'))
 
     def delete(self, id):
-        body_size = BodySize.query.get(int(id))
-        if not body_size.user_id == current_user.id:
-            return response_access_denied()
-        db.session.delete(body_size)
         try:
+            body_size = BodySize.query.get(int(id))
+            if not body_size.user_id == current_user.id:
+                return return_response(404, jsonify(error='Отказано в доступе'))
+            db.session.delete(body_size)
             db.session.commit()
-        except Exception:
-            response = jsonify(error='Произошла ошибка. Попробуйте позже')
-            response.status_code = 404
-            return response
+        except SQLAlchemyError as e:
+            return return_response(404, jsonify(error='Произошла ошибка. Попробуйте позже'))
         return '', 200
 
 
@@ -344,9 +371,4 @@ def get_dates(month, year):
 def return_response(status, msg):
     response = msg
     response.status_code = status
-    return response
-
-def response_access_denied():
-    response = jsonify(error='Отказано в доступе')
-    response.status_code = 404
     return response
