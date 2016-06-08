@@ -94,17 +94,16 @@ class AccountView(FlaskView):
     def change_password(self):
         data = request.get_json()
         if not bcrypt.check_password_hash(current_user.password, data['old']):
-            response = jsonify(error='Старый пароль введен не верно')
-            response.status_code = 404
-            return response
+            return return_response(404, jsonify(error='Старый пароль введен не верно'))
         if not data['new'] == data['confirm']:
-            response = jsonify(error='Новый пароль и подтверждение пароля не совпадают')
-            response.status_code = 404
-            return response
-        User.query.filter_by(id=current_user.id).update({
-            'password': bcrypt.generate_password_hash(data['new'])
-        })
-        db.session.commit()
+            return return_response(404, jsonify(error='Новый пароль и подтверждение пароля не совпадают'))
+        try:
+            User.query.filter_by(id=current_user.id).update({
+                'password': bcrypt.generate_password_hash(data['new'])
+            })
+            db.session.commit()
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return '', 200
 
 
