@@ -1,17 +1,17 @@
 import trafaret as t
 import calendar
 
-from flask import render_template, jsonify
-from flask_classy import FlaskView, request, route
-from flask_login import login_user, logout_user, current_user, login_required
-from sqlalchemy import desc
-from sqlalchemy.exc import SQLAlchemyError
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, BodySizeForm, EditExercise, RepeatForm
 from app.models import User, BodySize, Sets, Repeats, Categories
-from functools import wraps
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+from flask import render_template, jsonify
+from flask_classy import FlaskView, request, route
+from flask_login import login_user, logout_user, current_user, login_required
+from functools import wraps
+from sqlalchemy import desc
+from sqlalchemy.exc import SQLAlchemyError
 
 
 def check_login(func):
@@ -34,7 +34,7 @@ class AccountView(FlaskView):
     @route('/registration/', methods=['POST'])
     @check_login
     def registration(self):
-        form = RegistrationForm(data=request.get_json())
+        form = RegistrationForm(data=request.get_json(force=True))
         if form.validate():
             user = User(
                 username=form.username.data,
@@ -54,7 +54,7 @@ class AccountView(FlaskView):
     @route('/login/', methods=['POST'])
     @check_login
     def login(self):
-        form = LoginForm(data=request.get_json())
+        form = LoginForm(data=request.get_json(force=True))
         if form.validate():
             try:
                 user = User.query.filter_by(username=form.username.data).first()
@@ -79,7 +79,7 @@ class AccountView(FlaskView):
 
     @route('/check_unique/', methods=['POST'])
     def check_unique(self):
-        data = request.get_json()
+        data = request.get_json(force=True)
         unique = None
         if 'username' in data:
             unique = User.query.filter_by(username=data['username']).first()
@@ -89,10 +89,10 @@ class AccountView(FlaskView):
             return '', 200
         return '', 404
 
-    @login_required
     @route('/change_password/', methods=['POST'])
+    @login_required
     def change_password(self):
-        data = request.get_json()
+        data = request.get_json(force=True)
         if not bcrypt.check_password_hash(current_user.password, data['old']):
             return return_response(404, jsonify(error='Старый пароль введен не верно'))
         if not data['new'] == data['confirm']:
@@ -108,6 +108,7 @@ class AccountView(FlaskView):
 
 
 class SetsView(FlaskView):
+
     decorators = [login_required]
 
     def index(self):
