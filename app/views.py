@@ -304,12 +304,14 @@ class BodysizeView(FlaskView):
     def get(self, id):
         try:
             body_size = BodySize.query.get(int(id))
+            if not body_size.user_id == current_user.id:
+                return return_response(404, jsonify(error='Отказано в доступе'))
         except SQLAlchemyError as e:
             return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return jsonify(body_size=body_size.serialize)
 
     def patch(self, id):
-        form = BodySizeForm(data=request.get_json())
+        form = BodySizeForm(data=request.get_json(force=True))
         try:
             bs = BodySize.query.filter_by(id=int(id)).first()
             if not bs.user_id == current_user.id:
@@ -330,9 +332,9 @@ class BodysizeView(FlaskView):
         return response
 
     def post(self):
-        form = BodySizeForm(data=request.get_json())
+        form = BodySizeForm(data=request.get_json(force=True))
         if form.validate():
-            body_ize = BodySize(
+            body_size = BodySize(
                 date=form.date.data,
                 chest=form.chest.data,
                 waist=form.waist.data,
@@ -342,7 +344,7 @@ class BodysizeView(FlaskView):
                 user_id=current_user.id
             )
             try:
-                db.session.add(body_ize)
+                db.session.add(body_size)
                 db.session.commit()
                 return '', 201
             except SQLAlchemyError as e:
