@@ -166,7 +166,7 @@ class SetsView(FlaskView):
                 )
             )
         })
-        data = request.get_json()
+        data = request.get_json(force=True)
         for day in data:
             try:
                 day_check = t_set.check(day)
@@ -186,7 +186,6 @@ class SetsView(FlaskView):
                     db.session.add(repeat_instance)
                     db.session.flush()
             except t.DataError as e:
-                print(e)
                 return '', 404
         try:
             db.session.commit()
@@ -226,29 +225,35 @@ class RepeatsView(FlaskView):
     def get(self, id):
         try:
             repeat = Repeats.query.get(int(id))
+            s = Sets.query.get(repeat.set_id)
+            if not s.user_id == current_user.id:
+                return return_response(404, jsonify(error='Отказано в доступе'))
         except SQLAlchemyError as e:
             return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return jsonify(repeat=repeat.serialize)
 
     def post(self):
-        form = RepeatForm(data=request.get_json())
+        form = RepeatForm(data=request.get_json(force=True))
         if form.validate():
             repeats = Repeats(
                 set_id=form.set.data,
                 weight=form.weight.data,
                 repeat=form.repeats.data,
             )
-            db.session.add(repeats)
-            db.session.commit()
+            try:
+                db.session.add(repeats)
+                db.session.commit()
+            except SQLAlchemyError as e:
+                return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
             return '', 201
-        return 409
+        return '',  409
 
     def patch(self, id):
         r = Repeats.query.get(int(id))
         s = Sets.query.get(r.set_id)
         if not s.user_id == current_user.id:
             return return_response(404, jsonify(error='Отказано в доступе'))
-        form = RepeatForm(data=request.get_json())
+        form = RepeatForm(data=request.get_json(force=True))
         if form.validate():
             r.set_id = form.set.data
             r.weight = form.weight.data
@@ -265,10 +270,8 @@ class RepeatsView(FlaskView):
         db.session.delete(r)
         try:
             db.session.commit()
-        except Exception:
-            response = jsonify(error='Произошла ошибка. Попробуйте позже')
-            response.status_code = 404
-            return response
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return '', 200
 
 

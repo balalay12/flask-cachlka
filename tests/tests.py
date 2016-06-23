@@ -2,7 +2,7 @@ import json
 import unittest
 
 from app import app, db, bcrypt
-from app.models import User, Categories, Exercise, BodySize
+from app.models import User, Categories, Exercise, BodySize, Repeats, Sets
 from datetime import date
 from flask_testing import TestCase
 
@@ -142,6 +142,130 @@ class AccountTest(BaseTestCase):
         response = self.client.post('/account/change_password/', data=json.dumps(data_wrong_confirm))
         self.assert404(response)
         response = self.client.post('/account/change_password/', data=json.dumps(data_200))
+        self.assert200(response)
+
+
+class SetsTest(BaseTestCase):
+
+    def test_sets(self):
+        """TEST: sets crud"""
+
+        data_200 = [dict(
+            date='2016-5-23',
+            exercise=1,
+            exercise_name='test',
+            repeats=[dict(
+                weight=12,
+                repeats=12
+            )]
+        ), dict(
+            date='2016-5-23',
+            exercise=1,
+            exercise_name='test',
+            repeats=[dict(
+                weight=12,
+                repeats=12
+            )])]
+
+        data_400 = [dict(
+            date='',
+            exercise=1,
+            exercise_name='test',
+            repeats=[dict(
+                weight=12,
+                repeats=12
+            )]
+        )]
+
+        response = self.client.post('/sets/', data=json.dumps(data_200))
+        self.assert401(response)
+        self.login(**self.login_user)
+        response = self.client.post('/sets/', data=json.dumps(data_200))
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post('/sets/', data=json.dumps(data_400))
+        self.assert404(response)
+
+        set1 = Sets(
+            date=date.today(),
+            exercise_id=1,
+            user_id=1
+        )
+        db.session.add(set1)
+        db.session.commit()
+
+        response = self.client.get('/sets/')
+        self.assert200(response)
+        self.assertEqual(len(response.json['sets']), 1)
+
+
+class RepeatsTest(BaseTestCase):
+
+    def test_repeats(self):
+        """TEST: repeats crud"""
+
+        data_201 = dict(
+            set=1,
+            weight=12.5,
+            repeats=8,
+        )
+
+        data_201_patch = dict(
+            set=1,
+            weight=13.5,
+            repeats=10,
+        )
+
+        data_400 = dict(
+            set='',
+            weight=12.5,
+            repeats=8,
+        )
+
+        response = self.client.post('/repeats/', data=json.dumps(data_201))
+        self.assert401(response)
+        self.login(**self.login_user)
+        response = self.client.post('/repeats/', data=json.dumps(data_400))
+        self.assertEqual(response.status_code, 409)
+        response = self.client.post('/repeats/', data=json.dumps(data_201))
+        self.assertEqual(response.status_code, 201)
+
+        s1 = Sets(
+            date=date.today(),
+            exercise_id=1,
+            user_id=1
+        )
+
+        s2 = Sets(
+            date=date.today(),
+            exercise_id=1,
+            user_id=2
+        )
+
+        r = Repeats(
+            set_id=2,
+            weight=12,
+            repeat=43,
+        )
+        db.session.add(s1)
+        db.session.add(s2)
+        db.session.add(r)
+        db.session.commit()
+
+        response = self.client.get('/repeats/1')
+        self.assert200(response)
+        response = self.client.get('/repeats/2')
+        self.assert404(response)
+
+        response = self.client.patch('/repeats/2', data=json.dumps(data_400))
+        self.assert404(response)
+        response = self.client.patch('/repeats/1', data=json.dumps(data_400))
+        self.assertEqual(response.status_code, 409)
+        response = self.client.patch('/repeats/1', data=json.dumps(data_201_patch))
+        self.assert200(response)
+
+        response = self.client.delete('/repeats/2')
+        self.assert404(response)
+        response = self.client.delete('/repeats/1')
         self.assert200(response)
 
 
