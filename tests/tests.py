@@ -177,6 +177,7 @@ class SetsTest(BaseTestCase):
             )]
         )]
 
+        # POST
         response = self.client.post('/sets/', data=json.dumps(data_200))
         self.assert401(response)
         self.login(**self.login_user)
@@ -190,13 +191,99 @@ class SetsTest(BaseTestCase):
             exercise_id=1,
             user_id=1
         )
+        set2 = Sets(
+            date=date.today(),
+            exercise_id=1,
+            user_id=2
+        )
         db.session.add(set1)
+        db.session.add(set2)
         db.session.commit()
 
+        # GET all sets for current month
         response = self.client.get('/sets/')
         self.assert200(response)
         self.assertEqual(len(response.json['sets']), 1)
 
+        # GET by id
+        response = self.client.get('/sets/3')
+        self.assert200(response)
+        response = self.client.get('/sets/4')
+        self.assert404(response)
+
+        # PATCH
+        patch_ok = dict(
+            exercise=2
+        )
+        patch_error = dict(
+            exercise=''
+        )
+        response = self.client.patch('/sets/3', data=json.dumps(patch_error))
+        self.assert404(response)
+        response = self.client.patch('/sets/4', data=json.dumps(patch_ok))
+        self.assert404(response)
+        response = self.client.patch('/sets/3', data=json.dumps(patch_ok))
+        self.assert200(response)
+
+        # DELETE
+        response = self.client.delete('/sets/4')
+        self.assert404(response)
+        response = self.client.delete('/sets/3')
+        self.assert200(response)
+
+    def test_sets_for_month(self):
+        """TEST: get sets for 1 month"""
+
+        set1 = Sets(
+            date=date(year=int(2016), month=int(5), day=int(4)),
+            exercise_id=1,
+            user_id=1
+        )
+        set2 = Sets(
+            date=date(year=int(2016), month=int(5), day=int(7)),
+            exercise_id=1,
+            user_id=1
+        )
+        db.session.add(set1)
+        db.session.add(set2)
+        db.session.commit()
+
+        response = self.client.get('/sets/5/2015')
+        self.assert401(response)
+        self.login(**self.login_user)
+        response = self.client.get('/sets/5/2015')
+        self.assert200(response)
+        self.assertEqual(len(response.json['sets']), 0)
+        response = self.client.get('/sets/5/2016')
+        self.assert200(response)
+        self.assertEqual(len(response.json['sets']), 2)
+
+    def test_set_by_date(self):
+        """TEST: get set by date"""
+
+        set1 = Sets(
+            date=date(year=int(2016), month=int(5), day=int(4)),
+            exercise_id=1,
+            user_id=1
+        )
+        set2 = Sets(
+            date=date(year=int(2016), month=int(5), day=int(3)),
+            exercise_id=1,
+            user_id=2
+        )
+        db.session.add(set1)
+        db.session.add(set2)
+        db.session.commit()
+
+        response = self.client.get('/sets/by_date/2016-05-3')
+        self.assert401(response)
+        self.login(**self.login_user)
+        response = self.client.get('/sets/by_date/2016-05-3')
+        self.assert200(response)
+        self.assertEqual(len(response.json['day']), 0)
+        response = self.client.get('/sets/by_date/2016-05-4')
+        self.assert200(response)
+        self.assertEqual(len(response.json['day']), 1)
 
 class RepeatsTest(BaseTestCase):
 

@@ -126,6 +126,8 @@ class SetsView(FlaskView):
     def get(self, id):
         try:
             one_set = current_user.sets.filter(Sets.id == id).first()
+            if one_set is None:
+                return return_response(404, jsonify(error='Ничего не найдено.'))
         except SQLAlchemyError as e:
             return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return jsonify(set=one_set.serialize)
@@ -195,12 +197,13 @@ class SetsView(FlaskView):
         return '', 201
 
     def patch(self, id):
-        form = EditExercise(data=request.get_json())
+        form = EditExercise(data=request.get_json(force=True))
         try:
             if form.validate():
-                Sets.query.filter_by(id=int(id)).update({
-                    'exercise_id': form.exercise.data
-                })
+                s = Sets.query.get(int(id))
+                if not s.user_id == current_user.id:
+                    return return_response(404, jsonify(error='Отказано в доступе'))
+                s.exercise_id = form.exercise.data
                 db.session.commit()
                 return '', 200
         except SQLAlchemyError as e:
@@ -208,14 +211,14 @@ class SetsView(FlaskView):
         return '', 404
 
     def delete(self, id):
-        exercise = Sets.query.get(int(id))
-        db.session.delete(exercise)
         try:
+            exercise = Sets.query.get(int(id))
+            if not exercise.user_id == current_user.id:
+                return return_response(404, jsonify(error='Отказано в доступе'))
+            db.session.delete(exercise)
             db.session.commit()
-        except Exception:
-            response = jsonify(error='Произошла ошибка. Попробуйте позже')
-            response.status_code = 404
-            return response
+        except SQLAlchemyError as e:
+            return return_response(500, jsonify(error='Произошлка ошибка во время запроса.'))
         return '', 200
 
 
