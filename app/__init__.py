@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CsrfProtect
@@ -7,9 +9,11 @@ from flask_login import LoginManager
 
 app = Flask(__name__)
 login_manager = LoginManager()
-app.config.from_object('config')
+app.config.from_object(os.environ['APP_SETTINGS'])
 
-# CsrfProtect(app)
+if not app.config['TESTING']:
+    CsrfProtect(app)
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager.init_app(app)

@@ -1,19 +1,22 @@
 import json
 import unittest
+import os
 
 from app import app, db, bcrypt
 from app.models import User, Categories, Exercise, BodySize, Repeats, Sets
+from coverage import coverage
 from datetime import date
 from flask_testing import TestCase
 
 
+cov = coverage(branch=True, omit=['/home/danil/coding/for_venv/flaks_cachalka/*', 'tests.py'])
+cov.start()
+
 class BaseTestCase(TestCase):
 
     def create_app(self):
-        app.config['TESTING'] = True
-        app.config['CSRF_ENABLED'] = False
-        app.config['WTF_CSRF_ENABLED'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config.from_object('config.TestConfig')
+        app.config.from_object(os.environ['APP_SETTINGS'])
         return app
 
     def setUp(self):
@@ -461,4 +464,11 @@ class BodysizeTest(BaseTestCase):
         self.assert200(response)
 
 if __name__ == '__main__':
-    unittest.main()
+    try:
+        unittest.main()
+    except:
+        pass
+    cov.stop()
+    cov.save()
+    print('\nCoverage report:\n')
+    cov.report()
